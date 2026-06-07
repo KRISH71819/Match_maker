@@ -36,7 +36,17 @@ export default function Login() {
         onComplete: () => navigate('/dashboard'),
       });
     } catch (err) {
-      setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
+      console.error(err);
+      let errorMsg = 'Invalid credentials. Please try again.';
+      if (err.message === 'Network Error' || !err.response) {
+        errorMsg = 'Cannot connect to backend. Check Vercel/Render Environment Variables or CORS.';
+      } else if (err.response?.status === 404) {
+        errorMsg = 'Backend API route not found. Did you set VITE_API_URL in Vercel?';
+      } else if (err.response?.data?.error) {
+        errorMsg = err.response.data.error;
+      }
+      
+      setError(errorMsg);
       gsap.fromTo(
         formRef.current,
         { x: -8 },

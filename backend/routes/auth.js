@@ -42,10 +42,14 @@ router.post("/login", (req, res) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
-  const trimmedEmail = email.trim();
+  const trimmedEmail = email.trim().toLowerCase();
+  const trimmedPassword = password.trim();
+
   const matchmaker = MATCHMAKERS.find(
-    (m) => (m.email === trimmedEmail || m.email.replace('gmaiil.com', 'gmail.com') === trimmedEmail) && m.password === password
+    (m) => (m.email === trimmedEmail || m.email.replace('gmaiil.com', 'gmail.com') === trimmedEmail) && m.password === trimmedPassword
   );
+
+  console.log("Login attempt:", { inputEmail: trimmedEmail, inputPass: trimmedPassword, success: !!matchmaker });
 
   if (!matchmaker) {
     return res.status(401).json({ error: "Invalid credentials" });
